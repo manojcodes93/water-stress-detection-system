@@ -1,0 +1,1 @@
+["soil_temp_moisture", "conduct_soil", "leaf_moisture", "leaf_temperature", "ph1_soil", "soil_temp_ph", "soilnitrogen", "soilphosphorous", "soilpottasium", "hour_of_day", "is_daylight", "day_of_week", "day_of_period", "moisture_rolling_std", "moisture_rate_of_change", "temp_rolling_max"]
