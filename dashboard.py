@@ -49,17 +49,17 @@ with tab_live:
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        water_soil = st.number_input("Soil Moisture", 0.0, 30.0, 15.0, 0.1)
-        soil_temp = st.number_input("Soil Temperature (C)", 10.0, 50.0, 24.0, 0.1)
-        conduct = st.number_input("Soil EC", 0.0, 700.0, 80.0, 1.0)
+        water_soil = st.number_input("Soil Moisture", 10.0, 30.0, 15.0, 0.1)
+        soil_temp = st.number_input("Soil Temperature (C)", 18.0, 36.0, 24.0, 0.1)
+        conduct = st.number_input("Soil EC", 25.0, 630.0, 80.0, 1.0)
     with col2:
         leaf_m = st.number_input("Leaf Moisture", 0.0, 100.0, 15.0, 0.1)
-        leaf_t = st.number_input("Leaf Temperature (C)", 5.0, 60.0, 25.0, 0.1)
-        ph = st.number_input("Soil pH", 2.0, 7.0, 5.6, 0.01)
+        leaf_t = st.number_input("Leaf Temperature (C)", 12.0, 60.0, 25.0, 0.1)
+        ph = st.number_input("Soil pH", 3.9, 6.6, 5.6, 0.01)
     with col3:
-        n = st.number_input("Nitrogen", 0, 20, 2)
-        p = st.number_input("Phosphorus", 0, 55, 6)
-        k = st.number_input("Potassium", 0, 30, 3)
+        n = st.number_input("Nitrogen", 0, 17, 2)
+        p = st.number_input("Phosphorus", 1, 50, 6)
+        k = st.number_input("Potassium", 0, 25, 3)
 
     if st.button("Analyze", type="primary"):
         now = datetime.now()
@@ -91,15 +91,12 @@ with tab_live:
         db.store_prediction({"timestamp": now.isoformat(), **prediction}, recommendation)
 
         urgency = recommendation["urgency"]
-        composite = recommendation.get("composite_score", 0)
         if urgency == "high":
             st.error(f"**{prediction['stress_level']}**")
         elif urgency == "medium":
             st.warning(f"**{prediction['stress_level']}**")
         else:
             st.success(f"**{prediction['stress_level']}**")
-
-        st.caption(f"Composite stress score: {composite:.2f} (ML confidence: {prediction['confidence']:.0%})")
 
         st.markdown(f"### Recommendation")
         st.markdown(explanation)
