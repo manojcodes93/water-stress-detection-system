@@ -57,7 +57,6 @@ with tab_live:
         leaf_t = st.number_input("Leaf Temperature (C)", 5.0, 60.0, 25.0, 0.1)
         ph = st.number_input("Soil pH", 2.0, 7.0, 5.6, 0.01)
     with col3:
-        soil_temp_ph = st.number_input("Soil Temp (pH sensor, C)", 10.0, 50.0, 24.0, 0.1)
         n = st.number_input("Nitrogen", 0, 20, 2)
         p = st.number_input("Phosphorus", 0, 55, 6)
         k = st.number_input("Potassium", 0, 30, 3)
@@ -71,7 +70,7 @@ with tab_live:
             "leaf_moisture": leaf_m,
             "leaf_temperature": leaf_t,
             "ph1_soil": ph,
-            "soil_temp_ph": soil_temp_ph,
+            "soil_temp_ph": soil_temp,
             "soilnitrogen": n,
             "soilphosphorous": p,
             "soilpottasium": k,
