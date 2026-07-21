@@ -15,9 +15,9 @@ from src.database import SensorDatabase
 from src.llm_layer import LLMLayer
 
 BASE = os.path.dirname(__file__)
-MODEL_DIR = BASE
-DB_PATH = os.path.join(BASE, "sensor_readings.db")
-DATASET_PATH = os.path.join(BASE, "water_stress_dataset.csv")
+MODEL_DIR = os.path.join(BASE, "models")
+DB_PATH = os.path.join(BASE, "data", "sensor_readings.db")
+DATASET_PATH = os.path.join(BASE, "data", "water_stress_dataset.csv")
 
 st.set_page_config(page_title="Crop Stress Monitor", layout="wide")
 

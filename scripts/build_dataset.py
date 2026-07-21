@@ -199,7 +199,7 @@ corr = final[numeric_cols].corr()['water_soil'].drop('water_soil').sort_values(a
 for col, val in corr.items():
     print(f"    {col}: {val:+.3f}")
 
-output_path = os.path.join(base, 'water_stress_dataset.csv')
+output_path = os.path.join(base, 'data', 'water_stress_dataset.csv')
 final.to_csv(output_path, index=False)
 print(f"\n  Saved to: {output_path}")
 print(f"  Total rows: {len(final)}")

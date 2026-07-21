@@ -14,9 +14,9 @@ print("END-TO-END PIPELINE TEST")
 print("=" * 60)
 
 # Init all components
-predictor = StressPredictor(BASE)
+predictor = StressPredictor(os.path.join(BASE, 'models'))
 engine = RecommendationEngine()
-db = SensorDatabase(os.path.join(BASE, "sensor_readings.db"))
+db = SensorDatabase(os.path.join(BASE, "data", "sensor_readings.db"))
 llm = LLMLayer()
 
 print("\n[1] Components loaded")

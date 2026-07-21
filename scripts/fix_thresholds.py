@@ -4,7 +4,7 @@ import os
 
 base = r'D:\Projects\Water Stress Detection'
 
-df = pd.read_csv(os.path.join(base, 'water_stress_dataset.csv'))
+df = pd.read_csv(os.path.join(base, 'data', 'water_stress_dataset.csv'))
 df['datetime_rounded'] = pd.to_datetime(df['datetime_rounded'])
 
 print(f"Loaded: {df.shape}")
@@ -39,7 +39,7 @@ print(f"\nZeros after cleanup: {(df['water_soil'] == 0).sum()}")
 print(f"Min water_soil: {df['water_soil'].min():.2f}")
 
 # Save
-output_path = os.path.join(base, 'water_stress_dataset.csv')
+output_path = os.path.join(base, 'data', 'water_stress_dataset.csv')
 df.to_csv(output_path, index=False)
 print(f"\nSaved to: {output_path}")
 print(f"Final shape: {df.shape}")

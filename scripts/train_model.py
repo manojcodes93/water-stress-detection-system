@@ -10,20 +10,17 @@ import joblib
 
 base = r'D:\Projects\Water Stress Detection'
 
-# ============================================================
 # STEP 1: Load and prepare data
-# ============================================================
 print("=" * 60)
 print("STEP 1: Loading dataset")
 print("=" * 60)
 
-df = pd.read_csv(os.path.join(base, 'water_stress_dataset.csv'))
+df = pd.read_csv(os.path.join(base, 'data', 'water_stress_dataset.csv'))
 df['datetime_rounded'] = pd.to_datetime(df['datetime_rounded'])
 
 print(f"  Rows: {len(df)}")
 
 # REMOVE data-leakage features
-# water_soil defines the label — can't be a feature
 # moisture_rolling_mean is 0.987 correlated with water_soil
 leakage_cols = ['water_soil', 'moisture_rolling_mean']
 feature_cols = [c for c in df.columns if c not in ['datetime_rounded', 'stress_level'] + leakage_cols]
@@ -43,9 +40,7 @@ for i, cls in enumerate(le.classes_):
     count = (y == i).sum()
     print(f"    {cls}: {count} ({count/len(y)*100:.1f}%)")
 
-# ============================================================
 # STEP 2: Train/test split
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 2: Train/test split (80/20 stratified)")
 print("=" * 60)
@@ -60,9 +55,7 @@ for i, cls in enumerate(le.classes_):
     test_n = (y_test == i).sum()
     print(f"    {cls}: train={train_n} ({train_n/len(y_train)*100:.1f}%), test={test_n} ({test_n/len(y_test)*100:.1f}%)")
 
-# ============================================================
 # STEP 3: Train Random Forest
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 3: Training Random Forest (NO data leakage)")
 print("=" * 60)
@@ -80,9 +73,7 @@ model = RandomForestClassifier(
 model.fit(X_train, y_train)
 print("  Model trained")
 
-# ============================================================
 # STEP 4: Cross-validation
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 4: 5-Fold Cross-Validation")
 print("=" * 60)
@@ -93,9 +84,7 @@ cv_scores = cross_val_score(model, X_train, y_train, cv=cv, scoring='accuracy')
 print(f"  Fold scores: {[f'{s:.4f}' for s in cv_scores]}")
 print(f"  Mean accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std():.4f})")
 
-# ============================================================
 # STEP 5: Test evaluation
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 5: Test Set Evaluation")
 print("=" * 60)
@@ -123,9 +112,7 @@ for i, cls in enumerate(le.classes_):
         class_acc = (y_pred[class_mask] == i).sum() / class_mask.sum()
         print(f"    {cls}: {class_acc:.4f} ({class_acc*100:.1f}%)")
 
-# ============================================================
 # STEP 6: Feature importance
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 6: Feature Importance (without leakage)")
 print("=" * 60)
@@ -139,16 +126,14 @@ for rank, idx in enumerate(indices):
     bar = '#' * max(1, int(importances[idx] * 100))
     print(f"  {rank+1:<6} {feature_names[idx]:<30} {importances[idx]:>10.4f}  {bar}")
 
-# ============================================================
 # STEP 7: Save
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 7: Saving model")
 print("=" * 60)
 
-model_path = os.path.join(base, 'stress_model.pkl')
-encoder_path = os.path.join(base, 'label_encoder.pkl')
-features_path = os.path.join(base, 'feature_names.json')
+model_path = os.path.join(base, 'models', 'stress_model.pkl')
+encoder_path = os.path.join(base, 'models', 'label_encoder.pkl')
+features_path = os.path.join(base, 'models', 'feature_names.json')
 
 joblib.dump(model, model_path)
 joblib.dump(le, encoder_path)
@@ -160,9 +145,7 @@ print(f"  Model: {model_path} ({model_size:.1f} KB)")
 print(f"  Encoder: {encoder_path}")
 print(f"  Features: {features_path}")
 
-# ============================================================
 # STEP 8: Sanity check
-# ============================================================
 print("\n" + "=" * 60)
 print("STEP 8: Sample Predictions")
 print("=" * 60)
