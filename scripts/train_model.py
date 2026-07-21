@@ -20,12 +20,13 @@ df['datetime_rounded'] = pd.to_datetime(df['datetime_rounded'])
 
 print(f"  Rows: {len(df)}")
 
-# REMOVE data-leakage features
-# moisture_rolling_mean is 0.987 correlated with water_soil
-leakage_cols = ['water_soil', 'moisture_rolling_mean']
+# With multi-sensor composite labels, ALL features are legitimate inputs.
+# water_soil contributes 30% to the label — it's one of many signals, not the sole determinant.
+# Only exclude moisture_rolling_mean (redundant with water_soil).
+leakage_cols = ['moisture_rolling_mean']
 feature_cols = [c for c in df.columns if c not in ['datetime_rounded', 'stress_level'] + leakage_cols]
 
-print(f"\n  REMOVED (data leakage): {leakage_cols}")
+print(f"\n  REMOVED (redundant): {leakage_cols}")
 print(f"  Features ({len(feature_cols)}): {feature_cols}")
 
 X = df[feature_cols].values
@@ -161,12 +162,13 @@ for idx in sample_indices:
     match = "OK" if true_label == pred_label else "WRONG"
     
     # Show key feature values for this sample
+    water = X_test[idx][feature_names.index('water_soil')]
     leaf_m = X_test[idx][feature_names.index('leaf_moisture')]
     leaf_t = X_test[idx][feature_names.index('leaf_temperature')]
     ph = X_test[idx][feature_names.index('ph1_soil')]
     ec = X_test[idx][feature_names.index('conduct_soil')]
     
-    print(f"\n  [{match}] leaf_m={leaf_m:.1f}, leaf_t={leaf_t:.1f}, pH={ph:.2f}, EC={ec:.0f}")
+    print(f"\n  [{match}] moisture={water:.1f}, leaf_m={leaf_m:.1f}, leaf_t={leaf_t:.1f}, pH={ph:.2f}, EC={ec:.0f}")
     print(f"    True: {true_label}")
     print(f"    Pred: {pred_label} ({max_proba:.1%})")
 

@@ -7,13 +7,55 @@ class RecommendationEngine:
     MOISTURE_ADEQUATE = 18.0
     TEMP_HIGH = 35.0
     TEMP_VERY_HIGH = 40.0
-    HUMIDITY_LOW = 30.0
     EC_HIGH = 150.0
     PH_LOW = 5.0
     PH_HIGH = 6.2
     NPK_LOW_N = 2
     NPK_LOW_P = 3
     NPK_LOW_K = 2
+
+    WEIGHTS = {
+        "moisture": 0.30,
+        "leaf": 0.20,
+        "ec": 0.15,
+        "soil_temp": 0.10,
+        "ph": 0.10,
+        "npk": 0.10,
+        "leaf_temp": 0.05,
+    }
+
+    def compute_composite_score(self, features: dict) -> float:
+        water = features.get("water_soil", 15.0)
+        leaf_m = features.get("leaf_moisture", 50.0)
+        ec = features.get("conduct_soil", 50.0)
+        soil_t = features.get("soil_temp_moisture", 25.0)
+        ph = features.get("ph1_soil", 5.5)
+        n = features.get("soilnitrogen", 8.0)
+        p = features.get("soilphosphorous", 25.0)
+        k = features.get("soilpottasium", 12.0)
+        leaf_t = features.get("leaf_temperature", 25.0)
+
+        s_moisture = max(0, min(1, 1 - (water / 30.0)))
+        s_leaf = max(0, min(1, 1 - (leaf_m / 100.0)))
+        s_ec = max(0, min(1, ec / 630.0))
+        s_soil_temp = max(0, min(1, (soil_t - 15.0) / 35.0))
+        s_ph = max(0, min(1, abs(ph - 5.5) / 2.0))
+        s_n = max(0, min(1, 1 - (n / 17.0)))
+        s_p = max(0, min(1, 1 - (p / 50.0)))
+        s_k = max(0, min(1, 1 - (k / 25.0)))
+        s_npk = (s_n + s_p + s_k) / 3.0
+        s_leaf_temp = max(0, min(1, (leaf_t - 15.0) / 40.0))
+
+        composite = (
+            self.WEIGHTS["moisture"] * s_moisture +
+            self.WEIGHTS["leaf"] * s_leaf +
+            self.WEIGHTS["ec"] * s_ec +
+            self.WEIGHTS["soil_temp"] * s_soil_temp +
+            self.WEIGHTS["ph"] * s_ph +
+            self.WEIGHTS["npk"] * s_npk +
+            self.WEIGHTS["leaf_temp"] * s_leaf_temp
+        )
+        return round(composite, 3)
 
     def generate(self, prediction: dict, water_soil: float = None,
                  air_temp: float = None, humidity: float = None) -> dict:
@@ -25,8 +67,8 @@ class RecommendationEngine:
             water_soil = features.get("water_soil", 0.0)
         if air_temp is None:
             air_temp = features.get("soil_temp_moisture", 0.0)
-        if humidity is None:
-            humidity = features.get("conduct_soil", 0.0)
+
+        composite_score = self.compute_composite_score(features)
 
         reasons = []
         actions = []
@@ -34,14 +76,14 @@ class RecommendationEngine:
 
         if stress == "Severely Stressed":
             urgency = "high"
-            reasons.append("Crop is under severe water stress")
+            reasons.append(f"Crop is under severe water stress (composite score: {composite_score:.2f})")
             actions.append("Irrigate immediately")
         elif stress == "Moderately Stressed":
             urgency = "medium"
-            reasons.append("Crop shows moderate water stress")
+            reasons.append(f"Crop shows moderate water stress (composite score: {composite_score:.2f})")
             actions.append("Schedule irrigation within the next few hours")
         else:
-            reasons.append("Crop is healthy with adequate moisture")
+            reasons.append(f"Crop is healthy (composite score: {composite_score:.2f})")
 
         if water_soil > 0 and water_soil < self.MOISTURE_CRITICAL:
             reasons.append(f"Soil moisture is critically low at {water_soil:.1f}")
@@ -99,6 +141,7 @@ class RecommendationEngine:
             "timestamp": datetime.now().isoformat(),
             "stress_level": stress,
             "ml_confidence": confidence,
+            "composite_score": composite_score,
             "urgency": urgency,
             "reasons": reasons,
             "actions": actions,

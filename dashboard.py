@@ -92,12 +92,15 @@ with tab_live:
         db.store_prediction({"timestamp": now.isoformat(), **prediction}, recommendation)
 
         urgency = recommendation["urgency"]
+        composite = recommendation.get("composite_score", 0)
         if urgency == "high":
             st.error(f"**{prediction['stress_level']}**")
         elif urgency == "medium":
             st.warning(f"**{prediction['stress_level']}**")
         else:
             st.success(f"**{prediction['stress_level']}**")
+
+        st.caption(f"Composite stress score: {composite:.2f} (ML confidence: {prediction['confidence']:.0%})")
 
         st.markdown(f"### Recommendation")
         st.markdown(explanation)
