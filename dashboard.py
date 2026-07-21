@@ -41,7 +41,7 @@ llm = load_llm()
 st.title("Crop Water Stress Monitor")
 
 tab_live, tab_history, tab_voice, tab_data = st.tabs([
-    "Live Monitor", "History", "Voice Assistant", "Raw Data"
+    "Live Monitor", "History", "Ask the Assistant", "Raw Data"
 ])
 
 with tab_live:
@@ -216,8 +216,8 @@ with tab_history:
             st.bar_chart(stress_counts)
 
 with tab_voice:
-    st.subheader("Voice Assistant (Text Mode)")
-    st.caption("Type questions as if you were speaking to the assistant.")
+    st.subheader("Ask the Assistant")
+    st.caption("Type a question about your crop.")
 
     query = st.text_input("Ask about your crop:", placeholder="How is my field?")
     if query and st.button("Ask"):
