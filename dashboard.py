@@ -93,11 +93,11 @@ with tab_live:
 
         urgency = recommendation["urgency"]
         if urgency == "high":
-            st.error(f"**{prediction['stress_level']}** — Confidence: {prediction['confidence']:.1%}")
+            st.error(f"**{prediction['stress_level']}**")
         elif urgency == "medium":
-            st.warning(f"**{prediction['stress_level']}** — Confidence: {prediction['confidence']:.1%}")
+            st.warning(f"**{prediction['stress_level']}**")
         else:
-            st.success(f"**{prediction['stress_level']}** — Confidence: {prediction['confidence']:.1%}")
+            st.success(f"**{prediction['stress_level']}**")
 
         st.markdown(f"### Recommendation")
         st.markdown(explanation)
@@ -143,11 +143,11 @@ with tab_live:
 
             urgency = recommendation["urgency"]
             if urgency == "high":
-                st.error(f"**{prediction['stress_level']}** — {prediction['confidence']:.1%}")
+                st.error(f"**{prediction['stress_level']}**")
             elif urgency == "medium":
-                st.warning(f"**{prediction['stress_level']}** — {prediction['confidence']:.1%}")
+                st.warning(f"**{prediction['stress_level']}**")
             else:
-                st.success(f"**{prediction['stress_level']}** — {prediction['confidence']:.1%}")
+                st.success(f"**{prediction['stress_level']}**")
 
             st.info(explanation)
 
@@ -165,15 +165,14 @@ with tab_history:
         for p in reversed(preds[-10:]):
             ts = p['timestamp'][:19]
             level = p['stress_level']
-            conf = p['confidence']
             urgency = p['urgency']
 
             if urgency == "high":
-                st.error(f"**{ts}** — {level} ({conf:.1%})")
+                st.error(f"**{ts}** — {level}")
             elif urgency == "medium":
-                st.warning(f"**{ts}** — {level} ({conf:.1%})")
+                st.warning(f"**{ts}** — {level}")
             else:
-                st.success(f"**{ts}** — {level} ({conf:.1%})")
+                st.success(f"**{ts}** — {level}")
 
             for reason in p.get("reasons", [])[:2]:
                 st.caption(f"  {reason}")
@@ -268,7 +267,7 @@ with tab_data:
     if preds:
         df_preds = pd.DataFrame(preds)
         st.dataframe(
-            df_preds[['timestamp', 'stress_level', 'confidence', 'urgency']],
+            df_preds[['timestamp', 'stress_level', 'urgency']],
             use_container_width=True, height=300
         )
     else:
